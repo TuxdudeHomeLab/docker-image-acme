@@ -21,7 +21,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 env:
   PLATFORMS: linux/amd64,linux/arm64/v8
@@ -102,13 +101,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Build amd64 Docker image locally
         uses: docker/build-push-action@v5
         with:
@@ -136,9 +128,7 @@ jobs:
           context: .
           platforms: ${{env.PLATFORMS}}
           push: true
-          tags: |
-            ${{ env.DOCKERHUB_REPO_NAME }}:${{ env.DOCKERHUB_PUBLISH_TAG }}
-            ghcr.io/tuxdude/homelab-acme:${{ env.DOCKERHUB_PUBLISH_TAG }}
+          tags: ${{ env.DOCKERHUB_REPO_NAME }}:${{ env.DOCKERHUB_PUBLISH_TAG }}
           build-args: ${{ steps.docker_build_args.outputs.build_args }}
           allow: ${{ steps.docker_entitlements.outputs.entitlements }}
 
